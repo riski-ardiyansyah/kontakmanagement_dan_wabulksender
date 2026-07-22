@@ -1,0 +1,2958 @@
+<!DOCTYPE html>
+<html lang="id" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Percetakan Megah Pratama - Contact Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <script type="module" src="libs/pdfjs/pdf.mjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+  --bg: #ffffff;
+  --fg-primary: #111827;
+  --fg-secondary: #6b7280;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --card-bg: #f9fafb;
+  --border: #e5e7eb;
+  --tag-bg: #dbeafe;
+  --tag-fg: #1e40af;
+  --btn-bg: var(--primary);
+  --btn-hover: var(--primary-hover);
+  --btn-fg: #fff;
+}
+
+html.dark, body.dark {
+  --bg: #152144 !important;
+  --fg-primary: #f9fafb !important;
+  --fg-secondary: #9ca3af !important;
+  --primary: #3b82f6 !important;
+  --primary-hover: #60a5fa !important;
+  --card-bg: #1f2937 !important;
+  --border: #374151 !important;
+  --tag-bg: #1e40af !important;
+  --tag-fg: #bfdbfe !important;
+  --btn-bg: var(--primary) !important;
+  --btn-hover: var(--primary-hover) !important;
+  --btn-fg: #fff !important;
+}
+
+/* Terapkan ke semua elemen utama */
+body, html,
+header,
+.section,
+.table-container,
+#excel-table-container,
+main,
+.file-menu,
+.navbar-wrapper,
+nav.main-navbar {
+  background: var(--bg) !important;
+  color: var(--fg-primary) !important;
+}
+    /* Base styles */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg-primary);
+      font-family: var(--font-family);
+      font-size: 17px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1, h2 {
+      font-weight: 600;
+      user-select: none;
+      margin: 0;
+    }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 0.25rem;
+    }
+    h2 {
+      font-size: 26px;
+      color: var(--fg-secondary);
+      margin-bottom: 1.5rem;
+    }
+    p {
+      color: var(--fg-secondary);
+      max-width: 700px;
+      margin: 0 0 1rem 0;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+ .menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1101;
+  margin-left: 1rem;
+}
+.menu-toggle .bar {
+  display: block;
+  width: 28px;
+  height: 3.5px;
+  background: var(--primary);
+  border-radius: 2px;
+  margin: 4px 0;
+  transition: 0.3s;
+}
+
+@media (max-width: 830px) {
+  .menu-toggle {
+    display: flex;
+  }
+}
+
+/* Animasi hamburger ke X saat menu open */
+.main-navbar.open ~ .menu-toggle .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.main-navbar.open ~ .menu-toggle .bar:nth-child(2) {
+  opacity: 0;
+}
+.main-navbar.open ~ .menu-toggle .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+.menu-toggle span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+  margin: 4px 0;
+  transition: 0.3s;
+}
+
+nav.main-navbar {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s;
+}
+nav.main-navbar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  transition: all 0.3s;
+}
+
+ nav.main-navbar a {
+  position: relative;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition:
+    color 0.18s cubic-bezier(.4,0,.2,1),
+    background 0.28s cubic-bezier(.4,0,.2,1),
+    box-shadow 0.28s cubic-bezier(.4,0,.2,1),
+    transform 0.18s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+  display: inline-block;
+}
+
+nav.main-navbar a::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 8px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary-hover) 60%, var(--primary));
+  transform: scaleX(0);
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  z-index: 1;
+}
+
+nav.main-navbar a:hover,
+nav.main-navbar a:focus {
+  color: #fff;
+  background: linear-gradient(90deg, var(--primary-hover) 80%, var(--primary) 100%);
+  box-shadow: 0 2px 16px 0 rgba(37,99,235,0.12);
+  transform: translateY(-2px) scale(1.04);
+  outline: none;
+}
+
+nav.main-navbar a:hover::after,
+nav.main-navbar a:focus::after,
+nav.main-navbar a.active::after {
+  transform: scaleX(1);
+}
+
+nav.main-navbar a.active {
+  color: #fff;
+  background: linear-gradient(90deg, var(--primary) 80%, var(--primary-hover));
+  font-weight: 700;
+  box-shadow: 0 2px 16px 0 rgba(37,99,235,0.18);
+}
+@media (max-width: 830px) {
+  .menu-toggle {
+    display: flex;
+  }
+   nav.main-navbar {
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--primary) !important; /* Tetap biru di mobile */
+    color: #fff !important;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    z-index: 1200;
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  nav.main-navbar.open {
+    max-height: 400px;
+    transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  nav.main-navbar ul {
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 0;
+  }
+  nav.main-navbar li {
+    width: 100%;
+  }
+  nav.main-navbar a {
+    display: block;
+    position: relative;
+    padding: 0.9rem 1.5rem;
+    color: #fff !important;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-size: 1.08rem;
+    letter-spacing: 0.01em;
+    background: none;
+    transition: 
+      color 0.18s cubic-bezier(.4,0,.2,1),
+      background 0.28s cubic-bezier(.4,0,.2,1),
+      box-shadow 0.28s cubic-bezier(.4,0,.2,1),
+      transform 0.18s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+  }
+  nav.main-navbar a::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: 10px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary) 60%, var(--primary-hover));
+    transform: scaleX(0);
+    transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+    z-index: 1;
+  }
+  nav.main-navbar a:hover,
+  nav.main-navbar a:focus {
+    color: #fff !important;
+    background: linear-gradient(90deg, var(--primary-hover) 80%, var(--primary) 100%);
+    box-shadow: 0 2px 16px 0 rgba(37,99,235,0.12);
+    transform: translateX(8px) scale(1.04);
+    outline: none;
+  }
+  nav.main-navbar a:hover::after,
+  nav.main-navbar a:focus::after,
+  nav.main-navbar a.active::after {
+    transform: scaleX(1);
+  }
+  nav.main-navbar a.active {
+    color: #fff !important;
+    background: linear-gradient(90deg, var(--primary) 80%, var(--primary-hover));
+    font-weight: 700;
+    box-shadow: 0 2px 16px 0 rgba(37,99,235,0.18);
+  }
+}
+    
+    main {
+      flex-grow: 1;
+      max-width: 1200px;
+      margin: 3rem auto 4rem;
+      width: 100%;
+      padding: 0 1rem;
+    }
+    .section {
+      margin-bottom: 4rem;
+    }
+    .file-input-label {
+      cursor: pointer;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      padding: 0.8rem 1.7rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      display: inline-block;
+      user-select: none;
+      transition: background-color var(--transition);
+    }
+    .file-input-label:hover {
+      background: var(--btn-hover);
+    }
+    input[type="file"] {
+      display: none;
+    }
+    #file-preview-container > div {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      margin-top: 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    #file-preview-container strong {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+    .input-search {
+      flex-grow: 1;
+      min-width: 240px;
+      max-width: 400px;
+      padding: 0.5em 0.75em;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: border-color var(--transition);
+    }
+    .input-search:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+    }
+    select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: border-color var(--transition);
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      font-weight: 600;
+      border-radius: var(--radius);
+      padding: 0.6rem 1.5rem;
+      min-width: 110px;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      user-select: none;
+      transition: background-color var(--transition), transform 0.15s ease;
+    }
+    button:hover,
+    button:focus {
+      background: var(--btn-hover);
+      outline: none;
+      transform: scale(1.05);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    .button-secondary {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    .button-secondary:hover,
+    .button-secondary:focus {
+      background: var(--primary);
+      color: var(--btn-fg);
+    }
+    .button-danger {
+      background: #dc2626;
+      color: white;
+    }
+    .button-danger:hover,
+    .button-danger:focus {
+      background: #b91c1c;
+    }
+    .button-small {
+      min-width: 80px;
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+    }
+    .button-icon {
+      background: transparent;
+      padding: 0.2rem 0.4rem;
+      min-width: 40px;
+      border-radius: 6px;
+      color: var(--primary);
+    }
+    .button-icon:hover,
+    .button-icon:focus {
+      background: var(--card-bg);
+      box-shadow: 0 0 6px var(--primary);
+      color: var(--primary-hover);
+    }
+
+   .table-container {
+  margin-top: 1rem;
+  overflow-x: auto;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 860px;
+    }
+    thead {
+      background: var(--primary);
+      color: white;
+      user-select: none;
+    }
+    th, td {
+      padding: 0.65rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    th {
+      white-space: nowrap;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    th.sortable:hover {
+      background: var(--primary-hover);
+    }
+    th .sort-indicator {
+      font-size: 0.7rem;
+      margin-left: 0.4rem;
+      user-select: none;
+      opacity: 0.75;
+    }
+    td.notes-cell input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.25rem 0.5rem;
+      font-size: 1rem;
+      background: var(--bg);
+      color: var(--fg-primary);
+      transition: border-color var(--transition);
+    }
+    td.notes-cell input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+    }
+    td.tags-cell {
+      max-width: 220px;
+    }
+   
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    input[type="checkbox"]:focus {
+      outline-offset: 2px;
+      outline: 2px solid var(--primary);
+    }
+
+    .pagination {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+    .pagination button {
+      min-width: 36px;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      font-weight: 600;
+      color: var(--fg-primary);
+      transition: background-color var(--transition), border-color var(--transition);
+    }
+    .pagination button:hover:not(:disabled),
+    .pagination button:focus:not(:disabled) {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--btn-fg);
+      outline: none;
+    }
+    .pagination button:disabled {
+      cursor: default;
+      opacity: 0.35;
+    }
+
+    .bulk-actions {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .bulk-actions > * {
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 830px) {
+      main {
+        margin: 2rem 0 3rem;
+        padding: 0 0.5rem;
+      }
+      table {
+        min-width: unset;
+      }
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .input-search {
+        max-width: 100%;
+      }
+      .bulk-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+@media (max-width: 830px) {
+  .table-container {
+    overflow-x: unset;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  table, thead, tbody, th, td, tr {
+    display: block;
+    width: 100%;
+  }
+  thead {
+    display: none;
+  }
+  tbody tr {
+    margin-bottom: 1.2rem;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    padding: 1rem 0.7rem;
+    border: 1px solid var(--border);
+  }
+  td {
+    border: none;
+    position: relative;
+    padding: 0.5rem 0.7rem 0.5rem 40%;
+    min-height: 36px;
+    text-align: left;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 1rem;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    word-break: break-word;
+  }
+  td:before {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38%;
+    min-width: 110px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+    white-space: pre-line;
+    font-size: 0.97em;
+    content: attr(data-label);
+  }
+  /* Kolom aksi agar tombol ke bawah */
+  td[data-label="Aksi"] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding-left: 1rem;
+  }
+  td[data-label="Aksi"] > * {
+    margin: 0 0 0.5rem 0 !important;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+
+.mobile-table-header {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem 0.7rem 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border);
+  display: none;
+}
+@media (max-width: 830px) {
+  .mobile-table-header {
+    display: block !important;
+  }
+  thead {
+    display: none !important;
+  }
+}
+
+
+/* Tombol WA & Telepon di kolom aksi agar konsisten seperti tombol lain di mobile */
+.wa-btn-icon, .telp-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.4rem;
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.wa-btn-icon .icon-center,
+.telp-btn-icon .icon-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 830px) {
+  td[data-label="Aksi"] > .wa-btn-icon,
+  td[data-label="Aksi"] > .telp-btn-icon {
+    width: 100%;
+    min-width: 0;
+    height: 20px;
+    min-height: 20px;
+    padding: 0;
+    margin-left: 0 !important;
+    margin-bottom: 0.5rem;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-size: 1rem;
+  }
+  .wa-btn-icon .icon-center,
+  .telp-btn-icon .icon-center {
+    width: 100%;
+    height: 70%;
+    justify-content: center;
+  }
+}
+@media (max-width: 830px) {
+  td[data-label="Aksi"] > .wa-btn-icon {
+    margin-bottom: 0.5rem !important;
+  }
+  td[data-label="Aksi"] > .telp-btn-icon {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+
+.controls {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 1.5rem !important;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  gap: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.controls:focus-within,
+.controls:hover {
+  box-shadow: 0 2px 12px rgba(37,99,235,0.10);
+  border-color: var(--primary);
+}
+
+@media (max-width: 830px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem 0.7rem;
+    gap: 0.7rem;
+  }
+}
+
+#scroll-buttons {
+  position: fixed;
+  right: 18px;
+  bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+}
+#scroll-buttons button {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.55;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: none;
+}
+#scroll-buttons button:active,
+#scroll-buttons button:focus {
+  opacity: 1;
+  transform: scale(1.13);
+}
+#scroll-buttons button:hover {
+  opacity: 0.85;
+  transform: scale(1.08);
+}
+#scroll-buttons svg {
+  display: block;
+}
+
+
+#excel-table-container {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+  background: var(--card-bg); /* gunakan background utama kartu */
+  border-radius: var(--radius);
+  box-shadow: 0 2px 12px rgba(37,99,235,0.07);
+  padding: 1rem 0.5rem;
+}
+#excel-table-container table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 400px;
+  background: var(--card-bg); /* gunakan background utama */
+  font-size: 1rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 1px 8px rgba(37,99,235,0.05);
+}
+#excel-table-container th,
+#excel-table-container td {
+  padding: 0.65rem 1.1rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  min-width: 80px;
+  background: var(--card-bg); /* gunakan background utama */
+  transition: background 0.2s;
+}
+#excel-table-container th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+#excel-table-container td:empty {
+  background: var(--card-bg) !important;
+}
+@media (max-width: 700px) {
+  #excel-table-container table,
+  #excel-table-container thead,
+  #excel-table-container tbody,
+  #excel-table-container th,
+  #excel-table-container td,
+  #excel-table-container tr {
+    display: block;
+    width: 100%;
+  }
+  #excel-table-container tr {
+    margin-bottom: 1.2rem;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    padding: 0.7rem 0.5rem;
+    border: 1px solid var(--border);
+  }
+  #excel-table-container td {
+    border: none;
+    position: relative;
+    padding-left: 40%;
+    min-height: 36px;
+    text-align: left;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 1rem;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    word-break: break-word;
+  }
+  #excel-table-container td:before {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38%;
+    min-width: 110px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+    white-space: pre-line;
+    font-size: 0.97em;
+    content: attr(data-label);
+  }
+}
+
+
+.button-primary {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.3rem 1.5rem;
+  min-width: 110px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition), transform 0.15s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+.button-primary:hover,
+.button-primary:focus {
+  background: var(--btn-hover);
+  color: var(--btn-fg);
+  outline: none;
+  transform: scale(1.05);
+}
+.button-primary:active {
+  transform: scale(0.95);
+}
+
+
+.file-menu {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+@media (max-width: 600px) {
+  .file-menu {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .file-menu > * {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+
+
+
+
+
+html.dark, body.dark {
+  background: #152144 !important;
+  color: #f9fafb !important;
+}
+html.dark .section,
+body.dark .section,
+html.dark .table-container,
+body.dark .table-container {
+  background: #1f2937 !important;
+  color: #f9fafb !important;
+}
+html.dark .button-primary,
+body.dark .button-primary {
+  background: #3b82f6 !important;
+  color: #fff !important;
+}
+html.dark .button-secondary,
+body.dark .button-secondary {
+  border-color: #3b82f6 !important;
+  color: #3b82f6 !important;
+}
+
+  </style>
+</head>
+<body>
+ <header>
+    <div class="logo" aria-label="Logo Percetakan Megah Pratama Contact Manager">Percetakan Megah Pratama</div>
+    <button id="menuToggle" class="menu-toggle" aria-label="Tampilkan menu" aria-expanded="false">
+  <span class="bar"></span>
+  <span class="bar"></span>
+  <span class="bar"></span>
+</button>
+   
+   
+  </header>
+  <nav class="main-navbar" aria-label="Menu utama">
+  <ul>
+    <li><a href="#" class="active">Dashboard</a></li>
+    <li><a href="#">Kontak</a></li>
+    <li><a href="#">Layanan</a></li>
+    <li><a href="#">Template Pesan</a></li>
+    <li><a href="#">Riwayat</a></li>
+    <li><a href="#">Pengaturan</a></li>
+    <!-- Tambahkan menu lain sesuai kebutuhan -->
+  </ul>
+</nav>
+<div class="file-menu" style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+     <button id="darkModeToggle" class="btn-toggle" aria-pressed="false" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+     <!-- ...existing code... -->
+<button id="btn-open-csv-kontak">Open Kontak CSV</button>
+<input type="file" id="input-open-csv-kontak" accept=".csv" style="display:none;">
+  <input type="file" id="open-excel" accept=".xlsx,.xls" style="display:none;">
+  <button id="btn-open-excel">Buka Excel</button>
+   <button id="btn-export-excel" disabled>Ekspor ke Excel</button>
+  <input type="file" id="open-pdf" accept="application/pdf" style="display:none;">
+  <button id="btn-open-pdf">Buka PDF</button>
+<a href="https://www.ilovepdf.com/pdf_to_excel" target="_blank" rel="noopener" class="button-primary">Export PDF ke Excel</a>
+</div>
+  <main>
+    <section class="section" aria-labelledby="import-title">
+      <h1 id="import-title">Impor Kontak</h1>
+      <p>Unggah file Excel atau CSV Anda. Pilih kolom untuk nomor telepon, nama, dan kategori untuk menyatukan kontak.</p>
+      <input type="file" id="file-input" multiple accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+      <label for="file-input" class="file-input-label" aria-describedby="file-desc">Pilih file untuk diunggah</label>
+      <div id="file-desc" class="sr-only">Bisa memilih banyak file, format .csv dan .xlsx</div>
+      <div id="file-preview-container" role="list"></div>
+    </section>
+
+    <section class="section" aria-labelledby="manage-title" style="display:none;">
+      <h2 id="manage-title">Daftar Kontak</h2>
+
+      <div class="bulk-actions" aria-label="Aksi kontak terpilih">
+        <span id="bulk-selected-count">0 kontak terpilih</span>
+        <button id="bulk-tag-btn" class="button-secondary button-small" aria-disabled="true" disabled>Tambah Tag</button>
+        <button id="bulk-remove-tag-btn" class="button-secondary button-small" aria-disabled="true" disabled>Hapus Tag</button>
+        <button id="bulk-delete-btn" class="button-danger button-small" aria-disabled="true" disabled>Hapus Kontak</button>
+        <button id="bulk-export-btn" class="button-secondary button-small" disabled>Ekspor Kontak Terpilih</button>
+        <select id="bulk-tag-select" aria-label="Pilih tag untuk kontak terpilih">
+        <option value="" selected>Pilih tag...</option>
+        <option value="pelanggan-baru">Pelanggan Baru</option>
+        <option value="pelanggan-setia">Pelanggan Setia</option>
+        <option value="grosir">Grosir</option>
+        <option value="eceran">Eceran</option>
+        <option value="butuh-segera">Butuh Segera</option>
+        <option value="repeat-order">Repeat Order</option>
+        <option value="desain-perlu-bantuan">Desain Perlu Bantuan</option>
+        <option value="desain-siap-cetak">Desain Siap Cetak</option>
+        <option value="minat-brosur">Minat Brosur</option>
+        <option value="minat-spanduk">Minat Spanduk</option>
+        <option value="minat-stiker">Minat Stiker</option>
+        <option value="minat-undangan">Minat Undangan</option>
+        <option value="minat-kartu-nama">Minat Kartu Nama</option>
+        <option value="minat-kalender">Minat Kalender</option>
+        <option value="minat-sertifikat">Minat Sertifikat</option>
+        <option value="event-promosi">Event/Promosi</option>
+        <option value="belum-order">Belum Pernah Order</option>
+        <option value="berpotensi-order">Berpotensi Order</option>
+        <option value="harga-sensitif">Harga Sensitif</option>
+        <option value="fast-respon">Fast Respon</option>
+        <option value="slow-respon">Slow Respon</option>
+      </select>
+
+<select id="bulk-set-category-select" aria-label="Pilih kategori untuk kontak terpilih">
+  <option value="" selected>Pilih kategori...</option>
+</select>
+<button id="bulk-set-category-btn" class="button-secondary button-small" aria-disabled="true" disabled>Set Kategori</button>
+<!-- ...existing code...-->
+
+
+        <button id="undo-delete-btn" class="button-secondary button-small" style="margin-left:auto; display:none;">Urungkan Hapus</button>
+      </div>
+
+  
+       
+  <div class="controls" style="margin-bottom: 1rem;">
+  <select id="tag-filter" aria-label="Filter kontak berdasarkan tag">
+    <option value="">Filter  tag</option>
+  </select>
+  <select id="category-filter" aria-label="Filter kontak berdasarkan kategori">
+    <option value="">Filter  kategori</option>
+  </select>
+   
+  <select id="page-size-select" aria-label="Jumlah baris per halaman" style="max-width:140px;">
+    <option value="25">25 baris</option>
+    <option value="50">50 baris</option>
+    <option value="100">100 baris</option>
+    <option value="500">500 baris</option>
+    <option value="1000">1000 baris</option>
+  </select>
+  <input type="text" id="search-input" class="input-search" placeholder="Cari Semuanya..." aria-label="Cari kontak" />
+  <button id="btn-remove-duplicates" class="button-secondary button-small" title="Hapus nomor telepon duplikat">Hapus Duplikat</button>
+  <button id="btn-export-csv" class="button-secondary button-small" title="Ekspor semua kontak sebagai CSV">Ekspor CSV</button>
+<!-- Tambahkan di bawah tombol Ekspor CSV -->
+<button id="btn-export-custom-txt" class="button-secondary button-small" title="Ekspor custom ke TXT">Ekspot Whatsbot</button>
+
+       
+
+      <!-- Tambahkan ini di atas <table id="contacts-table"> -->
+      <div class="mobile-table-header" id="mobile-table-header" style="display:none;">
+        <label style="display:flex;align-items:center;gap:0.5rem;">
+          <input type="checkbox" id="mobile-select-all" aria-label="Pilih semua kontak (mobile)">
+          Pilih Semua
+        </label>
+      </div>
+      </div>
+
+
+
+      <div class="table-container" role="region" aria-live="polite">
+        <table id="contacts-table" aria-describedby="contact-count" role="table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="select-all" aria-label="Pilih semua kontak"/></th>
+              <th class="sortable" data-sort="name" scope="col" tabindex="0" aria-sort="none" aria-label="Nomor telepon: klik untuk mengurutkan">
+                Nama <span class="sort-indicator" aria-hidden="true"></span>
+              </th>
+              <th class="sortable" data-sort="phone" scope="col" tabindex="0" aria-sort="none" aria-label="Nama: klik untuk mengurutkan">
+                Nomor Telepon <span class="sort-indicator" aria-hidden="true"></span>
+              </th>
+              <th class="sortable" data-sort="category" scope="col" tabindex="0" aria-sort="none" aria-label="Kategori: klik untuk mengurutkan">
+                Kategori <span class="sort-indicator" aria-hidden="true"></span>
+              </th>
+               <th class="sortable" data-sort="filename" scope="col" tabindex="0" aria-sort="none" aria-label="Nama file asal: klik untuk mengurutkan">
+                Nama File <span class="sort-indicator" aria-hidden="true"></span>
+              </th>
+
+               <th>VAR1 (Posisi/Jabatan)</th>
+    <th>VAR2 (Tempat Kerja)</th>
+    <th>VAR3 (Target Pasar)</th>
+    <th>VAR4 (Produk)</th>
+    <th>VAR5 (Paket Promo)</th>
+    <th class="message-cell" scope="col">PESAN</th>
+    <th class="tags-cell" scope="col">Tag</th>
+    <th class="notes-cell" scope="col">Catatan</th>
+    <th>Taggal Follow Up</th>
+    <th class="aksi-header" scope="col">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="contacts-tbody" role="rowgroup"></tbody>
+        </table>
+      </div>
+      <div id="contact-count" style="margin-top:0.75rem; color: var(--fg-secondary);" aria-live="polite"></div>
+      <nav class="pagination" role="navigation" aria-label="Navigasi halaman kontak" aria-live="polite"></nav>
+    </section>
+    
+    <!-- Form tambah pesan & upload template -->
+<section class="section" aria-labelledby="pesan-title">
+  <h2 id="pesan-title">Template Pesan</h2>
+  <form id="form-add-message" style="margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;">
+    <input type="text" id="input-message" placeholder="Tulis pesan, gunakan {nama} untuk nama kontak" style="flex:1;min-width:220px;padding:0.5rem 0.75rem;border-radius:8px;border:1px solid var(--border);font-size:1rem;">
+    <input type="file" id="input-message-file" accept=".txt" style="display:none;">
+    <label for="input-message-file" class="file-input-label" style="padding:0.5rem 1.2rem;min-width:unset;">Upload TXT</label>
+    <button type="submit" class="button-secondary button-small">Tambah Pesan</button>
+  </form>
+  <div class="table-container" style="margin-bottom:1.5rem;">
+    <table id="messages-table" style="min-width:unset;">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Isi Pesan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="messages-tbody"></tbody>
+    </table>
+  </div>
+  <button id="bulk-send-message-btn" class="button-primary button-small" disabled>Kirim Pesan ke Kontak Terpilih</button>
+</section>
+
+<div id="excel-table-controls" style="display:flex;gap:0.7rem;align-items:center;margin-bottom:0.7rem;">
+  <button id="add-excel-col" class="button-secondary button-small" type="button">+ Tambah Kolom</button>
+  <button id="add-excel-row" class="button-secondary button-small" type="button">+ Tambah Baris</button>
+  <button id="delete-header-row" class="button-danger button-small" type="button" style="margin-bottom:0.7rem;">Hapus Baris Header</button>
+
+</div>
+<div id="excel-sheet-controls" style="display:flex;gap:0.7rem;align-items:center;margin-bottom:0.7rem;">
+  <label for="excel-sheet-select" style="font-weight:600;">Sheet:</label>
+  <select id="excel-sheet-select" style="min-width:120px;display:none;"></select>
+</div>
+   <div id="excel-table-container" style="margin-top:1.5rem;"></div>
+
+
+<div id="pdf-controls" style="display:none;align-items:center;gap:1rem;margin-bottom:1rem;">
+  <button id="pdf-prev" class="button-secondary button-small" type="button">← Prev</button>
+  <span>Halaman <input id="pdf-page-num" type="number" min="1" value="1" style="width:48px;text-align:center;"> dari <span id="pdf-page-count">1</span></span>
+  <button id="pdf-next" class="button-secondary button-small" type="button">Next →</button>
+  <button id="pdf-zoom-in" class="button-secondary button-small" type="button">Zoom +</button>
+  <button id="pdf-zoom-out" class="button-secondary button-small" type="button">Zoom −</button>
+</div>
+<div id="pdf-viewer-container" style="margin-top:1.5rem;"></div>
+  </main>
+
+  <div id="scroll-speed-container" style="position:fixed;right:18px;bottom:110px;z-index:9999;display:flex;align-items:center;gap:6px;">
+  <input type="number" id="scroll-speed" min="1" placeholder="Kecepatan ms/pixel" style="width:90px;padding:3px 7px;border-radius:7px;border:1px solid #bbb;opacity:0.7;">
+  <label for="scroll-speed" style="font-size:0.95em;color:#444;opacity:0.7;">ms/pixel</label>
+</div>
+<div id="scroll-buttons">
+  <button id="scroll-to-top" title="Ke Atas" aria-label="Scroll ke atas">
+    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" style="display:block;">
+      <circle cx="12" cy="12" r="12" fill="#2563eb" fill-opacity="0.18"/>
+      <path d="M12 17V7M12 7l-5 5M12 7l5 5" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button id="scroll-to-bottom" title="Ke Bawah" aria-label="Scroll ke bawah">
+    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" style="display:block;">
+      <circle cx="12" cy="12" r="12" fill="#2563eb" fill-opacity="0.18"/>
+      <path d="M12 7v10M12 17l5-5M12 17l-5-5" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button id="scroll-stop" title="Hentikan Scroll" aria-label="Hentikan Scroll">
+    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" style="display:block;">
+      <circle cx="12" cy="12" r="12" fill="#dc2626" fill-opacity="0.18"/>
+      <rect x="8" y="8" width="8" height="8" rx="2" fill="#dc2626"/>
+    </svg>
+  </button>
+  <button id="scroll-reset" title="Reset ke Atas" aria-label="Reset ke Atas">
+    <svg width="28" height="28" fill="none" viewBox="0 0 24 24" style="display:block;">
+      <circle cx="12" cy="12" r="12" fill="#2563eb" fill-opacity="0.18"/>
+      <path d="M12 19V5M12 5l-5 5M12 5l5 5" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="12" cy="12" r="10" stroke="#2563eb" stroke-width="1.5" fill="none"/>
+    </svg>
+  </button>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    (function() {
+      const contacts = [];
+      let filteredContacts = [];
+      let currentPage = 1;
+      let pageSize = 25;
+
+
+      const pageSizeSelect = document.getElementById('page-size-select');
+        if (pageSizeSelect) {
+          pageSizeSelect.value = String(pageSize);
+          pageSizeSelect.addEventListener('change', function() {
+            pageSize = parseInt(this.value, 10);
+            currentPage = 1;
+            renderTable();
+          });
+        }
+
+
+      let sortKey = null;
+      let sortAsc = true;
+      let lastDeleted = null;
+      const predefinedCategories = ['Pelanggan', 'Prospek', 'VIP', 'Lainnya'];
+
+      const fileInput = document.getElementById('file-input');
+      const filePreviewContainer = document.getElementById('file-preview-container');
+      const manageSection = document.querySelector('section[aria-labelledby="manage-title"]');
+      const contactsTbody = document.getElementById('contacts-tbody');
+      const searchInput = document.getElementById('search-input');
+      const tagFilter = document.getElementById('tag-filter');
+      const categoryFilter = document.getElementById('category-filter');
+      const btnRemoveDuplicates = document.getElementById('btn-remove-duplicates');
+      const btnExportCSV = document.getElementById('btn-export-csv');
+      const contactCount = document.getElementById('contact-count');
+      const paginationContainer = document.querySelector('.pagination');
+      const selectAllCheckbox = document.getElementById('select-all');
+      const mobileSelectAll = document.getElementById('mobile-select-all');
+
+// Tambahkan di sini:
+const btnOpenCsvKontak = document.getElementById('btn-open-csv-kontak');
+const inputOpenCsvKontak = document.getElementById('input-open-csv-kontak');
+
+btnOpenCsvKontak.onclick = () => inputOpenCsvKontak.click();
+
+inputOpenCsvKontak.onchange = function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const csvStr = e.target.result;
+    const workbook = XLSX.read(csvStr, {type: 'string'});
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const json = XLSX.utils.sheet_to_json(sheet, {header:1});
+    const header = json[0] || [];
+    // Index kolom sesuai ekspor
+    const idx = {};
+   header.forEach((h, i) => {
+  const key = String(h).toLowerCase();
+  if (key.includes('nama') && !key.includes('file')) idx.name = i;
+  else if (key.includes('nomor')) idx.phone = i;
+  else if (key.includes('kategori')) idx.category = i;
+  else if (key.includes('file')) idx.filename = i;
+  else if (key.includes('var1')) idx.var1 = i;
+  else if (key.includes('var2')) idx.var2 = i;
+  else if (key.includes('var3')) idx.var3 = i;
+  else if (key.includes('var4')) idx.var4 = i;
+  else if (key.includes('var5')) idx.var5 = i;
+  else if (key.includes('pesan')) idx.message = i;
+  else if (key.includes('tag')) idx.tags = i;
+  else if (key.includes('catatan')) idx.notes = i;
+  else if (key.includes('follow')) idx.followUp = i;
+});
+    // Import data, tambahkan ke contacts jika belum ada (tidak duplikat)
+    let added = 0;
+    for (let i = 1; i < json.length; i++) {
+      const row = json[i];
+      if (!row || idx.phone === undefined || !row[idx.phone]) continue;
+      const phone = String(row[idx.phone]).replace(/[^\d+]/g, '').slice(0, 20);
+      if (!phone) continue;
+      if (contacts.some(c => c.phone === phone)) continue; // skip duplikat
+      contacts.push({
+        id: '_' + Math.random().toString(36).substr(2, 9),
+        name: idx.name !== undefined ? String(row[idx.name] || '').trim() : '',
+        phone,
+        category: idx.category !== undefined ? String(row[idx.category] || '').trim() : '',
+        filename: idx.filename !== undefined ? String(row[idx.filename] || '').trim() : '',
+        var1: idx.var1 !== undefined ? String(row[idx.var1] || '') : '',
+        var2: idx.var2 !== undefined ? String(row[idx.var2] || '') : '',
+        var3: idx.var3 !== undefined ? String(row[idx.var3] || '') : '',
+        var4: idx.var4 !== undefined ? String(row[idx.var4] || '') : '',
+        var5: idx.var5 !== undefined ? String(row[idx.var5] || '') : '',
+        message: idx.message !== undefined ? String(row[idx.message] || '') : '',
+        tags: idx.tags !== undefined ? new Set(String(row[idx.tags] || '').split(',').map(t => t.trim()).filter(Boolean)) : new Set(),
+        notes: idx.notes !== undefined ? String(row[idx.notes] || '') : '',
+        followUp: idx.followUp !== undefined ? String(row[idx.followUp] || '') : ''
+      });
+      added++;
+    }
+    // Tampilkan tabel kontak
+    document.querySelector('section[aria-labelledby="manage-title"]').style.display = 'block';
+    renderTagFilter();
+    renderCategoryFilter();
+    renderTable();
+    alert(`Kontak berhasil ditambahkan dari file CSV!\n${added} kontak baru ditambahkan.`);
+  };
+  reader.readAsText(file);
+};
+        
+// Sinkronisasi: klik mobile -> desktop
+if (mobileSelectAll && selectAllCheckbox) {
+  mobileSelectAll.addEventListener('change', function() {
+    selectAllCheckbox.checked = this.checked;
+    selectAllCheckbox.dispatchEvent(new Event('change'));
+  });
+
+  // Sinkronisasi: klik desktop -> mobile
+  selectAllCheckbox.addEventListener('change', function() {
+    mobileSelectAll.checked = this.checked;
+    mobileSelectAll.indeterminate = this.indeterminate;
+  });
+}
+      const bulkActionsBar = document.querySelector('.bulk-actions');
+      const bulkSelectedCount = document.getElementById('bulk-selected-count');
+      const bulkTagBtn = document.getElementById('bulk-tag-btn');
+      const bulkRemoveTagBtn = document.getElementById('bulk-remove-tag-btn');
+      const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+      const bulkExportBtn = document.getElementById('bulk-export-btn');
+      const bulkTagSelect = document.getElementById('bulk-tag-select');
+      const undoDeleteBtn = document.getElementById('undo-delete-btn');
+     const bulkSetCategoryBtn = document.getElementById('bulk-set-category-btn');
+const bulkSetCategorySelect = document.getElementById('bulk-set-category-select');
+bulkSetCategorySelect.addEventListener('change', () => {
+    bulkSetCategoryBtn.disabled = !(selectedContacts.size > 0 && bulkSetCategorySelect.value);
+    bulkSetCategoryBtn.setAttribute('aria-disabled', bulkSetCategoryBtn.disabled);
+});
+      const selectedContacts = new Set();
+
+      function generateId() {
+        return '_' + Math.random().toString(36).substr(2, 9);
+      }
+      function sanitizePhone(phone) {
+        return phone.replace(/[^\d+]/g, '').slice(0, 20);
+      }
+      function sanitizeName(name) {
+        return name.trim().slice(0, 50);
+      }
+      function sanitizeCategory(cat) {
+        return cat.trim().slice(0, 30);
+      }
+
+      function renderFilePreview(files) {
+        filePreviewContainer.innerHTML = '';
+        if (files.length === 0) return;
+        Array.from(files).forEach((file, idx) => {
+          filePreviewContainer.insertAdjacentHTML('beforeend', 
+              `<div role="listitem" aria-label="File preview ${file.name}">
+                <strong>${file.name}</strong>
+                <div id="column-select-container-${idx}" style="margin-top:0.4rem;">
+                  Memuat preview file...
+                </div>
+              </div>`);
+          readFileAndPreview(file, idx);
+        });
+      }
+
+    function readFileAndPreview(file, idx) {
+  const container = document.getElementById(`column-select-container-${idx}`);
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let data = e.target.result;
+    let workbook;
+    try {
+      if (file.name.toLowerCase().endsWith('.csv')) {
+        const arr = new Uint8Array(data);
+        const str = new TextDecoder('utf-8').decode(arr);
+        workbook = XLSX.read(str, { type: 'string' });
+      } else {
+        workbook = XLSX.read(data, { type: 'array' });
+      }
+    } catch (error) {
+      container.innerHTML = `<span style="color:#dc2626;">Kesalahan membaca file: ${error.message}</span>`;
+      return;
+    }
+
+    // Sheet state: track imported sheets
+    let remainingSheets = workbook.SheetNames.map((name, i) => ({ name, idx: i }));
+
+    function renderSheets() {
+      if (remainingSheets.length === 0) {
+        container.innerHTML = `<span style="color:#16a34a;font-weight:600;">Semua sheet sudah diimpor ✅</span>`;
+        return;
+      }
+      container.innerHTML = '';
+      remainingSheets.forEach(sheetObj => {
+        const sheetName = sheetObj.name;
+        const sheetIdx = sheetObj.idx;
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false });
+        const headers = jsonData[0] ? jsonData[0].map(h => (h !== undefined ? String(h) : "")) : [];
+        function buildOptions() {
+          let options = '<option value="-1">-- Pilih kolom --</option>';
+          headers.forEach((h, i) => {
+            options += `<option value="${i}">${h || '(Kolom ' + (i + 1) + ')'}</option>`;
+          });
+          return options;
+        }
+        const phoneSelectId = `phone-column-select-${idx}-${sheetIdx}`;
+        const nameSelectId = `name-column-select-${idx}-${sheetIdx}`;
+        const categorySelectId = `category-column-select-${idx}-${sheetIdx}`;
+        const var1SelectId = `var1-column-select-${idx}-${sheetIdx}`;
+        const var2SelectId = `var2-column-select-${idx}-${sheetIdx}`;
+        const var3SelectId = `var3-column-select-${idx}-${sheetIdx}`;
+        const var4SelectId = `var4-column-select-${idx}-${sheetIdx}`;
+        const var5SelectId = `var5-column-select-${idx}-${sheetIdx}`;
+        const previewId = `preview-values-${idx}-${sheetIdx}`;
+        const sheetDiv = document.createElement('div');
+        sheetDiv.style.marginBottom = '1.2rem';
+      sheetDiv.innerHTML = `
+  <strong>Sheet: ${sheetName}</strong><br>
+  <label for="${nameSelectId}" style="font-weight:600;">Pilih kolom nama:</label>
+  <select id="${nameSelectId}" aria-label="Kolom nama untuk ${file.name}">${buildOptions()}</select>
+  <label for="${phoneSelectId}" style="font-weight:600; margin-left: 1rem;">Nomor Telepon:</label>
+  <select id="${phoneSelectId}" aria-label="Kolom nomor telepon untuk ${file.name}">${buildOptions()}</select>
+  <label for="${var1SelectId}" style="font-weight:600;">VAR1 (Posisi/Jabatan):</label>
+  <select id="${var1SelectId}" aria-label="Kolom VAR1 untuk ${file.name}">${buildOptions()}</select>
+  <label for="${var2SelectId}" style="font-weight:600; margin-left: 1rem;">VAR2 (Tempat Kerja):</label>
+  <select id="${var2SelectId}" aria-label="Kolom VAR2 untuk ${file.name}">${buildOptions()}</select>
+  <label for="${var3SelectId}" style="font-weight:600; margin-left: 1rem;">VAR3 (Target Pasar):</label>
+  <select id="${var3SelectId}" aria-label="Kolom VAR3 untuk ${file.name}">${buildOptions()}</select>
+  <label for="${var4SelectId}" style="font-weight:600; margin-left: 1rem;">VAR4 (Produk):</label>
+  <select id="${var4SelectId}" aria-label="Kolom VAR4 untuk ${file.name}">${buildOptions()}</select>
+  <label for="${var5SelectId}" style="font-weight:600; margin-left: 1rem;">VAR5 (Paket Promo):</label>
+  <select id="${var5SelectId}" aria-label="Kolom VAR5 untuk ${file.name}">${buildOptions()}</select>
+  <button class="button-primary" style="margin-left:1rem; margin-top:0.5rem;" type="button">Impor Sheet Ini</button>
+ <b><p style="font-size:0.875rem; color: var(--fg-secondary); margin-top:0.5rem;">
+Priview 3 Baris akan tampil setelah memilih kolom telepon
+</p><b>
+
+  <pre id="${previewId}" style="font-family: monospace; white-space: pre-wrap; max-height:6rem; overflow-y: auto;"></pre>
+`;
+        container.appendChild(sheetDiv);
+
+        // Event listeners
+        const phoneSelect = sheetDiv.querySelector(`#${phoneSelectId}`);
+        const nameSelect = sheetDiv.querySelector(`#${nameSelectId}`);
+        const previewPre = sheetDiv.querySelector(`#${previewId}`);
+        
+
+        // ...existing code...
+function updatePreview() {
+  const phoneIdx = parseInt(phoneSelect.value, 10);
+  const nameIdx = parseInt(nameSelect.value, 10);
+  const var1Idx = parseInt(sheetDiv.querySelector(`#${var1SelectId}`).value, 10);
+  const var2Idx = parseInt(sheetDiv.querySelector(`#${var2SelectId}`).value, 10);
+  const var3Idx = parseInt(sheetDiv.querySelector(`#${var3SelectId}`).value, 10);
+  const var4Idx = parseInt(sheetDiv.querySelector(`#${var4SelectId}`).value, 10);
+  const var5Idx = parseInt(sheetDiv.querySelector(`#${var5SelectId}`).value, 10);
+
+  if (nameIdx < 0 || isNaN(nameIdx)) {
+    previewPre.textContent = 'Harap pilih kolom nama untuk preview';
+    return;
+  }
+  if (phoneIdx < 0 || isNaN(phoneIdx)) {
+    previewPre.textContent = 'Harap pilih kolom nomor telepon untuk preview';
+    return;
+  }
+
+  let lines = [];
+  for (let i = 1; i < jsonData.length && i <= 4; i++) {
+    const row = jsonData[i] || [];
+    const nameVal = (nameIdx >= 0 && !isNaN(nameIdx) && row[nameIdx]) ? sanitizeName(String(row[nameIdx])) : '';
+    const phoneVal = row[phoneIdx] ? sanitizePhone(String(row[phoneIdx])) : '(kosong)';
+    const var1Val = (var1Idx >= 0 && !isNaN(var1Idx) && row[var1Idx]) ? String(row[var1Idx]) : '';
+    const var2Val = (var2Idx >= 0 && !isNaN(var2Idx) && row[var2Idx]) ? String(row[var2Idx]) : '';
+    const var3Val = (var3Idx >= 0 && !isNaN(var3Idx) && row[var3Idx]) ? String(row[var3Idx]) : '';
+    const var4Val = (var4Idx >= 0 && !isNaN(var4Idx) && row[var4Idx]) ? String(row[var4Idx]) : '';
+    const var5Val = (var5Idx >= 0 && !isNaN(var5Idx) && row[var5Idx]) ? String(row[var5Idx]) : '';
+    lines.push(
+      `Nama: ${nameVal.padEnd(14)} | Telp: ${phoneVal.padEnd(18)}\n` +
+      `  VAR1: ${var1Val} | VAR2: ${var2Val} | VAR3: ${var3Val} | VAR4: ${var4Val} | VAR5: ${var5Val}`
+    );
+  }
+  previewPre.textContent = lines.join('\n');
+}
+
+
+
+
+
+
+
+
+        phoneSelect.addEventListener('change', updatePreview);
+        nameSelect.addEventListener('change', updatePreview);
+       
+        sheetDiv.querySelector(`#${var1SelectId}`).addEventListener('change', updatePreview);
+        sheetDiv.querySelector(`#${var2SelectId}`).addEventListener('change', updatePreview);
+        sheetDiv.querySelector(`#${var3SelectId}`).addEventListener('change', updatePreview);
+        sheetDiv.querySelector(`#${var4SelectId}`).addEventListener('change', updatePreview);
+        sheetDiv.querySelector(`#${var5SelectId}`).addEventListener('change', updatePreview);
+        updatePreview();
+
+       // ...dalam readFileAndPreview, fungsi renderSheets...
+sheetDiv.querySelector('button').addEventListener('click', () => {
+  const phoneIdx = parseInt(phoneSelect.value, 10);
+  if (phoneIdx < 0 || isNaN(phoneIdx)) {
+    alert('Pilih kolom nomor telepon sebelum mengimpor');
+    return;
+  }
+  const nameIdx = parseInt(nameSelect.value, 10);
+  const catIdx = -1;
+  const var1Idx = parseInt(sheetDiv.querySelector(`#${var1SelectId}`).value, 10);
+  const var2Idx = parseInt(sheetDiv.querySelector(`#${var2SelectId}`).value, 10);
+  const var3Idx = parseInt(sheetDiv.querySelector(`#${var3SelectId}`).value, 10);
+  const var4Idx = parseInt(sheetDiv.querySelector(`#${var4SelectId}`).value, 10);
+  const var5Idx = parseInt(sheetDiv.querySelector(`#${var5SelectId}`).value, 10);
+
+  // Perbaiki baris ini:
+  importContactsFromData(
+    jsonData,
+    phoneIdx,
+    nameIdx,
+    catIdx,
+    file.name + ' - ' + sheetName,
+    var1Idx,
+    var2Idx,
+    var3Idx,
+    var4Idx,
+    var5Idx
+  );
+  // ...existing code...
+  remainingSheets = remainingSheets.filter(s => s.idx !== sheetIdx);
+  renderSheets();
+  manageSection.style.display = 'block';
+  renderTagFilter();
+  renderCategoryFilter();
+  renderTable();
+});
+      });
+    }
+
+    renderSheets();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+const btnOpenExcel = document.getElementById('btn-open-excel');
+const inputOpenExcel = document.getElementById('open-excel');
+const btnOpenPDF = document.getElementById('btn-open-pdf');
+const inputOpenPDF = document.getElementById('open-pdf');
+const btnExportExcel = document.getElementById('btn-export-excel');
+const excelTableContainer = document.getElementById('excel-table-container');
+const pdfViewerContainer = document.getElementById('pdf-viewer-container');
+
+let currentExcelFilename = 'exported_data.xlsx';
+let excelSheets = []; // Array of {name, data}
+let currentSheetIdx = 0;
+let excelData = []; // Array of arrays
+const excelSheetSelect = document.getElementById('excel-sheet-select');
+const excelSheetControls = document.getElementById('excel-sheet-controls');
+const addExcelColBtn = document.getElementById('add-excel-col');
+const addExcelRowBtn = document.getElementById('add-excel-row');
+
+addExcelColBtn.onclick = function() {
+  if (!excelData.length) return;
+  excelData[0].push('Kolom Baru ' + (excelData[0].length + 1));
+  for (let i = 1; i < excelData.length; i++) {
+    excelData[i].push('');
+  }
+  renderExcelTable();
+};
+
+addExcelRowBtn.onclick = function() {
+  if (!excelData.length) return;
+  const newRow = Array(excelData[0].length).fill('');
+  excelData.push(newRow);
+  renderExcelTable();
+};
+
+btnOpenExcel.onclick = () => inputOpenExcel.click();
+inputOpenExcel.onchange = function() {
+  const file = this.files[0];
+  if (!file) return;
+  currentExcelFilename = file.name.replace(/\.[^/.]+$/, '') || 'exported_data'; // tanpa ekstensi
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, {type: 'array'});
+    excelSheets = workbook.SheetNames.map(name => ({
+      name,
+      data: XLSX.utils.sheet_to_json(workbook.Sheets[name], {header:1})
+    }));
+    currentSheetIdx = 0;
+    setSheetDropdown();
+    setSheetData(0);
+    btnExportExcel.disabled = false;
+    pdfViewerContainer.innerHTML = '';
+  };
+  reader.readAsArrayBuffer(file);
+};
+
+
+function setSheetDropdown() {
+  if (excelSheets.length <= 1) {
+    excelSheetSelect.style.display = 'none';
+    return;
+  }
+  excelSheetSelect.innerHTML = '';
+  excelSheets.forEach((sheet, idx) => {
+    const opt = document.createElement('option');
+    opt.value = idx;
+    opt.textContent = sheet.name;
+    excelSheetSelect.appendChild(opt);
+  });
+  excelSheetSelect.style.display = '';
+  excelSheetSelect.value = String(currentSheetIdx);
+}
+
+excelSheetSelect.onchange = function() {
+  const idx = parseInt(this.value, 10);
+  if (!isNaN(idx)) {
+    setSheetData(idx);
+  }
+};
+
+function setSheetData(idx) {
+  currentSheetIdx = idx;
+  excelData = excelSheets[idx].data;
+  renderExcelTable();
+}
+
+document.getElementById('delete-header-row').onclick = function() {
+  if (!excelData.length) return;
+  if (confirm('Hapus seluruh baris header (baris pertama)?')) {
+    // Hapus baris pertama (baris header)
+    excelData.splice(0, 1);
+    renderExcelTable();
+  }
+};
+
+function renderExcelTable() {
+  if (!excelData.length) {
+    excelTableContainer.innerHTML = '';
+    return;
+  }
+  let html = '<table><thead><tr>';
+  // Kolom nomor: header dikosongkan
+  html += `<th style="width:48px;background:var(--card-bg);"></th>`;
+  // Header kolom, klik untuk hapus cell header
+  excelData[0].forEach((cell, j) => {
+    html += `<th class="excel-col-header" data-col="${j}" title="Klik untuk hapus isi header kolom">${cell ?? ''} <span style="color:#dc2626;cursor:pointer;" title="Hapus isi header kolom">&times;</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+  for (let i = 0; i < excelData.length; i++) {
+  const row = excelData[i];
+  // ...
+
+    html += `<tr><td class="excel-row-header" data-row="${i}" style="text-align:center; background:var(--card-bg);cursor:pointer;" title="Klik untuk hapus baris">${i} <span style="color:#dc2626;cursor:pointer;" title="Hapus baris">&times;</span></td>`;
+    row.forEach((cell, j) => {
+      const label = excelData[0][j] ?? '';
+      const isEmpty = cell === undefined || cell === null || cell === '';
+      html += `<td contenteditable="true" data-row="${i}" data-col="${j}" data-label="${label}" style="min-width:80px;padding:4px 8px; background:var(--card-bg);">${isEmpty ? '' : cell}</td>`;
+    });
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  excelTableContainer.innerHTML = html;
+
+ // Hapus baris saat nomor baris diklik (termasuk baris 0/header)
+excelTableContainer.querySelectorAll('.excel-row-header').forEach(td => {
+  td.addEventListener('click', function(e) {
+    const row = +td.dataset.row;
+    if (row >= 0 && row < excelData.length) {
+      if (confirm('Hapus baris ini?')) {
+        excelData.splice(row, 1);
+        renderExcelTable();
+      }
+    }
+    e.stopPropagation();
+  });
+});
+
+  // Update excelData on edit
+  excelTableContainer.querySelectorAll('td[contenteditable]').forEach(td => {
+    td.oninput = function() {
+      const r = +td.dataset.row, c = +td.dataset.col;
+      if (!excelData[r]) excelData[r] = [];
+      excelData[r][c] = td.textContent;
+    };
+  });
+}
+
+  // Update excelData on edit
+  excelTableContainer.querySelectorAll('td[contenteditable]').forEach(td => {
+    td.oninput = function() {
+      const r = +td.dataset.row, c = +td.dataset.col;
+      if (!excelData[r]) excelData[r] = [];
+      excelData[r][c] = td.textContent;
+    };
+  });
+
+
+btnExportExcel.onclick = function() {
+  if (!excelSheets.length) return;
+  const wb = XLSX.utils.book_new();
+  excelSheets.forEach((sheet, idx) => {
+    // Jika sheet yang sedang diedit, ambil data terbaru dari excelData
+    const data = (idx === currentSheetIdx) ? excelData : sheet.data;
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    // Gunakan nama sheet asli, atau Sheet1, Sheet2, dst jika kosong
+    XLSX.utils.book_append_sheet(wb, ws, sheet.name || `Sheet${idx+1}`);
+  });
+  XLSX.writeFile(wb, currentExcelFilename + ".xlsx");
+};
+
+
+function importContactsFromData(data, phoneCol, nameCol, catCol, filename, var1Col, var2Col, var3Col, var4Col, var5Col) {
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (!row) continue;
+    const rawPhone = row[phoneCol];
+    if (!rawPhone) continue;
+    const phone = sanitizePhone(String(rawPhone));
+    if (!phone) continue;
+    const name = nameCol >= 0 && row[nameCol] ? sanitizeName(String(row[nameCol])) : '';
+    const category = catCol >= 0 && row[catCol] ? sanitizeCategory(String(row[catCol])) : '';
+    const var1 = var1Col >= 0 && row[var1Col] ? row[var1Col] : '';
+    const var2 = var2Col >= 0 && row[var2Col] ? row[var2Col] : '';
+    const var3 = var3Col >= 0 && row[var3Col] ? row[var3Col] : '';
+    const var4 = var4Col >= 0 && row[var4Col] ? row[var4Col] : '';
+    const var5 = var5Col >= 0 && row[var5Col] ? row[var5Col] : '';
+    if (!contacts.some(c => c.phone === phone)) {
+      contacts.push({
+        id: generateId(),
+        phone,
+        name,
+        category,
+        filename,
+        tags: new Set(),
+        notes: '',
+        var1,
+        var2,
+        var3,
+        var4,
+        var5,
+        message: '',
+        followUp: ''
+      });
+    }
+  }
+  currentPage = 1;
+}
+
+
+
+      function getAllTags() {
+        const tagSet = new Set();
+        contacts.forEach(c => c.tags.forEach(t => tagSet.add(t)));
+        return Array.from(tagSet).sort();
+      }
+
+      function renderTagFilter() {
+        const allTags = getAllTags();
+        tagFilter.innerHTML = '<option value="">Filter  tag</option>';
+        allTags.forEach(t => {
+          const option = document.createElement('option');
+          option.value = t;
+          option.textContent = t;
+          tagFilter.appendChild(option);
+        });
+      }
+
+      function getAllCategories() {
+        const catSet = new Set(contacts.map(c => c.category).filter(c => c));
+        predefinedCategories.forEach(pc => catSet.add(pc));
+        return Array.from(catSet).sort();
+      }
+
+function renderCategoryFilter() {
+    const categories = getAllCategories();
+    categoryFilter.innerHTML = '<option value="">Filter  kategori</option>';
+    categories.forEach(c => {
+      const option = document.createElement('option');
+      option.value = c;
+      option.textContent = c;
+      categoryFilter.appendChild(option);
+    });
+    renderBulkCategorySelect(); // Tambahkan ini
+}
+
+           // ...existing code...
+function renderBulkCategorySelect() {
+    const select = document.getElementById('bulk-set-category-select');
+    if (!select) return;
+    // Simpan value yang sedang dipilih
+    const current = select.value;
+    select.innerHTML = '<option value="">Pilih kategori...</option>';
+    new Set([...predefinedCategories, ...getAllCategories()]).forEach(cat => {
+        if (!cat) return;
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        if (cat === current) opt.selected = true;
+        select.appendChild(opt);
+    });
+}
+// ...existing code...
+
+      function compareValues(a, b, asc = true) {
+        if (a === undefined || a === null) a = '';
+        if (b === undefined || b === null) b = '';
+        a = String(a).toLowerCase();
+        b = String(b).toLowerCase();
+        if (a < b) return asc ? -1 : 1;
+        if (a > b) return asc ? 1 : -1;
+        return 0;
+      }
+
+      
+
+            // Pesan/template message logic
+      const messages = [];
+      const messagesTbody = document.getElementById('messages-tbody');
+      const formAddMessage = document.getElementById('form-add-message');
+      const inputMessage = document.getElementById('input-message');
+      const inputMessageFile = document.getElementById('input-message-file');
+      const bulkSendMessageBtn = document.getElementById('bulk-send-message-btn');
+      
+      // Render tabel pesan
+      function renderMessagesTable() {
+        messagesTbody.innerHTML = '';
+        messages.forEach((msg, i) => {
+          const tr = document.createElement('tr');
+          const tdNo = document.createElement('td');
+          tdNo.textContent = i+1;
+          const tdMsg = document.createElement('td');
+          tdMsg.textContent = msg;
+          const tdAksi = document.createElement('td');
+
+          // Tombol Add Pesan ke kontak terpilih
+          const addBtn = document.createElement('button');
+          addBtn.className = 'button-secondary button-small';
+          addBtn.textContent = 'Add Pesan';
+          addBtn.title = 'Tambahkan pesan ini ke kontak terpilih';
+          addBtn.addEventListener('click', () => {
+            if (selectedContacts.size === 0) {
+              alert('Pilih kontak yang ingin diisi pesan.');
+              return;
+            }
+            contacts.forEach(c => {
+              if (selectedContacts.has(c.id)) {
+                c.message = msg;
+              }
+            });
+            renderTable();
+            alert('Pesan ditambahkan ke kontak terpilih.');
+          });
+          tdAksi.appendChild(addBtn);
+
+          // Tombol hapus pesan
+          const delBtn = document.createElement('button');
+          delBtn.className = 'button-danger button-small';
+          delBtn.textContent = 'Hapus';
+          delBtn.style.marginLeft = '0.5rem';
+          delBtn.addEventListener('click', () => {
+            messages.splice(i,1);
+            renderMessagesTable();
+          });
+          tdAksi.appendChild(delBtn);
+
+          tr.appendChild(tdNo);
+          tr.appendChild(tdMsg);
+          tr.appendChild(tdAksi);
+          messagesTbody.appendChild(tr);
+        });
+        bulkSendMessageBtn.disabled = !(messages.length && selectedContacts.size);
+      }
+      
+      // Tambah pesan dari form
+      formAddMessage.addEventListener('submit', e => {
+        e.preventDefault();
+        const val = inputMessage.value.trim();
+        if(val) {
+          addMessage(val);
+          inputMessage.value = '';
+        }
+      });
+      
+      // Tambah pesan dari file txt
+      inputMessageFile.addEventListener('change', () => {
+        const file = inputMessageFile.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          const lines = e.target.result.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+          lines.forEach(line => addMessage(line));
+        };
+        reader.readAsText(file);
+        inputMessageFile.value = '';
+      });
+      
+      // Fungsi tambah pesan ke array
+      function addMessage(msg) {
+        if(!messages.includes(msg)) {
+          messages.push(msg);
+          renderMessagesTable();
+        }
+      }
+      
+     // Bulk send pesan ke kontak terpilih
+bulkSendMessageBtn.addEventListener('click', () => {
+  if (!messages.length || !selectedContacts.size) {
+    alert('Pilih pesan dan kontak terlebih dahulu.');
+    return;
+  }
+  const template = messages[0];
+  const toSend = contacts.filter(c => selectedContacts.has(c.id));
+  if (!toSend.length) return;
+  let idx = 0;
+  let popupBlocked = false;
+
+  function sendNext() {
+    if (idx >= toSend.length) return;
+    const c = toSend[idx];
+    let msg = (c.message && c.message.trim()) ? c.message.trim() : template;
+    msg = msg.replace(/\{nama\}/gi, c.name || '');
+    const waNumber = c.phone.replace(/[^\d]/g, '').replace(/^0/, '62');
+    const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
+    const win = window.open(url, '_blank');
+    if (!win) {
+      popupBlocked = true;
+      alert('Popup WhatsApp diblokir oleh browser. Silakan izinkan popup untuk situs ini agar bisa mengirim pesan ke semua kontak.');
+      return;
+    }
+    idx++;
+    setTimeout(sendNext, 1000);
+  }
+
+  if (confirm(`Kirim pesan ke ${toSend.length} kontak?`)) sendNext();
+});
+      // Update tombol bulk send jika ada perubahan seleksi kontak
+      const origUpdateBulkActions = updateBulkActions;
+      updateBulkActions = function() {
+        origUpdateBulkActions();
+        bulkSendMessageBtn.disabled = !(messages.length && selectedContacts.size);
+      };
+
+
+      function getSalamWaktu() {
+      const jam = new Date().getHours();
+      if (jam >= 4 && jam < 11) return 'pagi';
+      if (jam >= 11 && jam < 15) return 'siang';
+      if (jam >= 15 && jam < 18) return 'sore';
+      return 'malam';
+    }
+    
+
+
+      // Now extend renderTable to include filename column and sort by it
+      function renderTable() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const filterTag = tagFilter.value;
+        const filterCategory = categoryFilter.value;
+        filteredContacts = contacts.filter(c => {
+          const phoneMatch = c.phone.toLowerCase().includes(searchTerm);
+          const nameMatch = c.name.toLowerCase().includes(searchTerm);
+          const categoryMatch = c.category.toLowerCase().includes(searchTerm);
+          const notesMatch = c.notes.toLowerCase().includes(searchTerm);
+          const fileMatch = (c.filename || '').toLowerCase().includes(searchTerm);
+          const tagsArray = Array.from(c.tags).map(t => t.toLowerCase());
+          const tagFilterMatch = filterTag ? tagsArray.includes(filterTag.toLowerCase()) : true;
+         const categoryFilterMatch = filterCategory
+  ? (c.category && c.category.toLowerCase() === filterCategory.toLowerCase())
+  : true;
+          return (phoneMatch || nameMatch || categoryMatch || notesMatch || fileMatch || tagsArray.some(t => t.includes(searchTerm))) && tagFilterMatch && categoryFilterMatch;
+        });
+        if(sortKey){
+          filteredContacts.sort((a,b) => {
+            let aval = a[sortKey] || '';
+            let bval = b[sortKey] || '';
+            if(typeof aval === 'string') aval = aval.toLowerCase();
+            if(typeof bval === 'string') bval = bval.toLowerCase();
+            if(aval < bval) return sortAsc ? -1 : 1;
+            if(aval > bval) return sortAsc ? 1 : -1;
+            return 0;
+          });
+        }
+        const totalPages = Math.max(1, Math.ceil(filteredContacts.length / pageSize));
+        if(currentPage > totalPages) currentPage = totalPages;
+        const startIndex = (currentPage - 1)*pageSize;
+        const pageData = filteredContacts.slice(startIndex,startIndex+pageSize);
+
+        contactsTbody.innerHTML = '';
+        if(pageData.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 8;
+          td.style.textAlign = 'center';
+          td.style.padding = '1.5rem';
+          td.style.color = 'var(--fg-secondary)';
+          td.textContent = 'Tidak ada kontak ditemukan.';
+          tr.appendChild(td);
+          contactsTbody.appendChild(tr);
+        } else {
+          for(const c of pageData){
+            const tr = document.createElement('tr');
+            const tdSelect = document.createElement('td');
+            const cb = document.createElement('input');
+            cb.type='checkbox';
+            cb.dataset.id=c.id;
+            cb.setAttribute('aria-label', `Pilih kontak nomor ${c.phone}`);
+            cb.checked = selectedContacts.has(c.id);
+            cb.addEventListener('change', e => {
+              if(e.target.checked) selectedContacts.add(c.id);
+              else selectedContacts.delete(c.id);
+              updateBulkActions();
+              updateSelectAllCheckbox();
+            });
+            tdSelect.appendChild(cb);
+            tr.appendChild(tdSelect);
+
+       // Nama
+  const tdName = document.createElement('td');
+  tdName.textContent = c.name;
+  tdName.style.userSelect = 'text';
+  tdName.setAttribute('data-label', 'Nomor Telepon');
+  tr.appendChild(tdName);
+
+  // Nomor Telepon
+  const tdPhone = document.createElement('td');
+  tdPhone.textContent = c.phone;
+  tdPhone.style.userSelect = 'text';
+  tdPhone.setAttribute('data-label', 'Nomor Telepon');
+  tr.appendChild(tdPhone);
+
+
+           // Ganti dengan:
+const tdCategory = document.createElement('td');
+tdCategory.setAttribute('data-label', 'Kategori');
+tdCategory.textContent = c.category || '';
+tr.appendChild(tdCategory);
+
+            const tdFile = document.createElement('td');
+tdFile.setAttribute('data-label', 'Nama File');
+            tdFile.textContent = c.filename || '';
+            tr.appendChild(tdFile);
+
+             // VAR1
+            const tdVar1 = document.createElement('td');
+            tdVar1.textContent = c.var1 || '';
+            tdVar1.setAttribute('data-label', 'VAR1 (Posisi/Jabatan)');
+            tr.appendChild(tdVar1);
+
+            // VAR2
+            const tdVar2 = document.createElement('td');
+            tdVar2.textContent = c.var2 || '';
+            tdVar2.setAttribute('data-label', 'VAR2 (Tempat Kerja)');
+            tr.appendChild(tdVar2);
+
+            // VAR3
+            const tdVar3 = document.createElement('td');
+            tdVar3.textContent = c.var3 || '';
+            tdVar3.setAttribute('data-label', 'VAR3 (Target Pasar)');
+            tr.appendChild(tdVar3);
+
+            // VAR4
+            const tdVar4 = document.createElement('td');
+            tdVar4.textContent = c.var4 || '';
+            tdVar4.setAttribute('data-label', 'VAR4 (Produk)');
+            tr.appendChild(tdVar4);
+
+            // VAR5
+            const tdVar5 = document.createElement('td');
+            tdVar5.textContent = c.var5 || '';
+            tdVar5.setAttribute('data-label', 'VAR5 (Paket Promo)');
+            tr.appendChild(tdVar5);
+
+             const tdMessage = document.createElement('td');
+tdMessage.setAttribute('data-label', 'Pesan');
+            tdMessage.className = 'message-cell';
+            const inputMessage = document.createElement('textarea');
+            inputMessage.type = 'text';
+            inputMessage.value = c.message || '';
+            inputMessage.placeholder = 'Pesan...';
+            inputMessage.setAttribute('aria-label', `Pesan untuk kontak nomor ${c.phone}`);
+            inputMessage.maxLength = 200;
+            inputMessage.addEventListener('change', e => {
+              c.message = e.target.value.trim();
+              // Jika ada pesan, tambahkan ke dalam grup pesan
+              if (c.message) {
+                const existingGroup = document.getElementById('group-message-' + c.id);
+                if (!existingGroup) {
+                  const groupDiv = document.createElement('div');
+                  groupDiv.id = 'group-message-' + c.id;
+                  groupDiv.className = 'message-group';
+                  groupDiv.style.marginTop = '0.5rem';
+                  groupDiv.innerHTML = `
+                    <div style="font-size:0.9rem; color:var(--fg-secondary); margin-bottom:0.3rem;">Pesan untuk ${c.name}:</div>
+                    <div style="background:var(--card-bg); padding:0.8rem; border-radius:var(--radius); border:1px solid var(--border);">
+                      ${c.message.split('\n').map(line => `<div>${line}</div>`).join('')}
+                    </div>
+                  `;
+                  tdMessage.appendChild(groupDiv);
+                } else {
+                  existingGroup.style.display = 'block';
+                }
+              } else {
+                const existingGroup = document.getElementById('group-message-' + c.id);
+                if (existingGroup) {
+                  existingGroup.style.display = 'none';
+                }
+              }
+            });
+            tdMessage.appendChild(inputMessage);
+            tr.appendChild(tdMessage);
+
+           const tdTags = document.createElement('td');
+           tdTags.setAttribute('data-label', 'Tag');
+
+            if(c.tags.size === 0) tdTags.textContent = '—';
+            else c.tags.forEach(tag => {
+              const span = document.createElement('span');
+              span.className = 'tag';
+              span.textContent = tag;
+              tdTags.appendChild(span);
+            });
+            tr.appendChild(tdTags);
+
+           
+
+
+            // ...existing code...
+
+// ...existing code...
+           
+// ...existing code...
+
+// PESAN (sudah ada, gunakan c.message)
+
+// Tag (sudah ada)
+
+// Catatan (sudah ada)
+
+
+// ...existing code...
+
+
+         
+
+             const tdNotes = document.createElement('td');
+            tdNotes.setAttribute('data-label', 'Catatan');
+            tdNotes.className = 'notes-cell';
+            const inputNotes = document.createElement('textarea');
+            inputNotes.type='text';
+            inputNotes.value=c.notes;
+            inputNotes.placeholder='Catatan...';
+            inputNotes.setAttribute('aria-label', `Catatan untuk kontak nomor ${c.phone}`);
+            inputNotes.maxLength=200;
+            inputNotes.addEventListener('change', e => c.notes = e.target.value.trim());
+            tdNotes.appendChild(inputNotes);
+            tr.appendChild(tdNotes);
+
+                    
+
+            
+
+
+        // Tanggal Follow Up
+        const tdFollowUp = document.createElement('td');
+        const inputFollowUp = document.createElement('input');
+        inputFollowUp.type = 'date';
+        inputFollowUp.value = c.followUp || '';
+        inputFollowUp.addEventListener('change', e => c.followUp = e.target.value);
+        tdFollowUp.appendChild(inputFollowUp);
+        tdFollowUp.setAttribute('data-label', 'Taggal Follow Up');
+        tr.appendChild(tdFollowUp);
+
+          const tdActions = document.createElement('td');
+tdActions.setAttribute('data-label', 'Aksi');
+            tdActions.style.whiteSpace = 'nowrap';
+
+            const tagSelect = document.createElement('select');
+            tagSelect.setAttribute('aria-label', `Tambah tag kontak nomor ${c.phone}`);
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = 'Tambah tag...';
+            tagSelect.appendChild(defaultOpt);
+            getAllTags().forEach(t => {
+              const opt = document.createElement('option');
+              opt.value = t;
+              opt.textContent = t;
+              tagSelect.appendChild(opt);
+            });
+            tagSelect.addEventListener('change', () => {
+              const val = tagSelect.value.trim();
+              if(val && !c.tags.has(val)){
+                c.tags.add(val);
+                renderTagFilter();
+                renderTable();
+              }
+              tagSelect.value = '';
+            });
+            tdActions.appendChild(tagSelect);
+
+            if(c.tags.size > 0){
+              const removeTagBtn = document.createElement('button');
+              removeTagBtn.className = 'button-secondary button-small';
+              removeTagBtn.title = 'Hapus semua tag';
+              removeTagBtn.setAttribute('aria-label', `Hapus semua tag dari nomor ${c.phone}`);
+              removeTagBtn.textContent = 'Hapus Tag';
+              removeTagBtn.style.marginLeft = '0.5rem';
+              removeTagBtn.addEventListener('click', () => {
+                c.tags.clear();
+                renderTagFilter();
+                renderTable();
+              });
+              tdActions.appendChild(removeTagBtn);
+            }
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'button-secondary button-icon';
+            copyBtn.title = 'Salin nomor telepon';
+            copyBtn.setAttribute('aria-label', `Salin nomor telepon ${c.phone}`);
+            copyBtn.innerHTML = '📋';
+            copyBtn.style.marginLeft = '0.45rem';
+            copyBtn.addEventListener('click', () => {
+              navigator.clipboard.writeText(c.phone).then(() => {
+                copyBtn.textContent = '✔️';
+                setTimeout(() => {copyBtn.textContent = '📋';},1500);
+              });
+            });
+            tdActions.appendChild(copyBtn);
+
+            const waLink = document.createElement('a');
+            waLink.className = 'button-primary button-small';
+            waLink.textContent = 'WhatsApp';
+          // LOGIKA NOMOR WA SESUAI PERMINTAAN
+let waNumber = c.phone.replace(/[^\d]/g, '');
+if (waNumber.startsWith('8')) {
+  waNumber = '62' + waNumber;
+} else if (waNumber.startsWith('0')) {
+  waNumber = '62' + waNumber.slice(1);
+}
+
+// Ambil pesan dari kolom pesan, jika ada
+let pesan = (c.message && c.message.trim()) ? c.message.trim() : '';
+
+// Salam waktu otomatis
+let salam = getSalamWaktu();
+let nama = c.name ? c.name : '';
+let pesanWA = `Selamat ${salam} Kepada Yth Bpk/Ibu ${nama} di tempat:\nKami dari Percetakan Megah Pratama Mohon maaf mengganggu waktunya sebentar izin kami menyampai pesan ini :`;
+
+// Tambahkan baris baru dan pesan jika ada
+if (pesan) {
+  pesanWA += `\n${pesan}`;
+}
+
+// WhatsApp Button
+const waBtn = document.createElement('a');
+waBtn.className = 'button-primary button-small wa-btn-icon';
+waBtn.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(pesanWA)}`;
+waBtn.target = '_blank';
+waBtn.rel = 'noopener noreferrer';
+waBtn.title = 'Kirim WhatsApp';
+waBtn.setAttribute('aria-label', `Kirim WhatsApp ke ${c.phone}`);
+waBtn.style.marginLeft = '0.45rem';
+waBtn.innerHTML = `
+  <span class="icon-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 32 32" style="vertical-align:middle;">
+      <circle cx="16" cy="16" r="16" fill="#25d366"/>
+      <path fill="#fff" d="M24.5 19.8c-.4-.2-2.3-1.1-2.6-1.2-.3-.1-.5-.2-.7.2s-.8 1.2-1 1.4c-.2.2-.4.3-.8.1-.4-.2-1.7-.6-3.2-2-1.2-1.1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.2-.4.3-.6.1-.2 0-.5 0-.7 0-.2-.7-1.7-1-2.3-.3-.6-.6-.5-.8-.5-.2 0-.5 0-.7 0-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7 0 1.6 1.1 3.1 1.2 3.3.1.2 2.2 3.4 5.4 4.6.8.3 1.4.5 1.9.6.8.3 1.5.2 2.1.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.1-1.4-.1-.1-.4-.2-.8-.4z"/>
+    </svg>
+  </span>
+`;
+tdActions.appendChild(waBtn);
+
+           // Telepon Button
+const telpBtn = document.createElement('a');
+telpBtn.className = 'button-secondary button-small telp-btn-icon';
+telpBtn.href = `tel:${c.phone.replace(/[^\d+]/g, '')}`;
+telpBtn.title = `Telepon ${c.phone}`;
+telpBtn.setAttribute('aria-label', `Telepon ${c.phone}`);
+telpBtn.style.marginLeft = '0.45rem';
+telpBtn.innerHTML = `
+  <span class="icon-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="vertical-align:middle;">
+      <path fill="currentColor" d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1C10.07 22 2 13.93 2 4.5A1 1 0 0 1 3 3.5h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.2 2.2z"/>
+    </svg>
+  </span>
+`;
+tdActions.appendChild(telpBtn);
+            // ...existing code...
+
+            const exportBtn = document.createElement('button');
+            exportBtn.className = 'button-secondary button-small';
+            exportBtn.textContent = 'Ekspor';
+            exportBtn.title = 'Ekspor kontak ini sebagai CSV';
+            exportBtn.style.marginLeft = '0.45rem';
+            exportBtn.addEventListener('click', () => exportCSV([c]));
+            tdActions.appendChild(exportBtn);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'button-danger button-small';
+            deleteBtn.textContent = 'Hapus';
+            deleteBtn.title = 'Hapus kontak ini';
+            deleteBtn.setAttribute('aria-label', `Hapus kontak nomor ${c.phone}`);
+            deleteBtn.style.marginLeft = '0.45rem';
+            deleteBtn.addEventListener('click', () => {
+              if(confirm(`Yakin ingin menghapus kontak nomor ${c.phone}?`)) deleteContacts(new Set([c.id]));
+            });
+            tdActions.appendChild(deleteBtn);
+
+            tr.appendChild(tdActions);
+            contactsTbody.appendChild(tr);
+          }
+        }
+        updateContactCount();
+        renderPagination(totalPages);
+        updateBulkActions();
+        updateSelectAllCheckbox();
+        updateSortIndicators();
+        renderBulkCategorySelect();
+      }
+
+
+
+  
+      function updateContactCount() {
+        contactCount.textContent = `Menampilkan ${filteredContacts.length} kontak (halaman ${currentPage}) dari total ${contacts.length} kontak.`;
+      }
+
+      function renderPagination(totalPages) {
+  paginationContainer.innerHTML = '';
+  if (totalPages <= 1) return;
+
+  function createPageBtn(num, isActive) {
+    const btn = document.createElement('button');
+    btn.textContent = num;
+    btn.disabled = isActive;
+    if (isActive) btn.setAttribute('aria-current', 'page');
+    btn.addEventListener('click', () => {
+      currentPage = num;
+      renderTable();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    return btn;
+  }
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '←';
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.setAttribute('aria-label', 'Halaman sebelumnya');
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderTable();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+  paginationContainer.appendChild(prevBtn);
+
+        if (totalPages <= 7) {
+          for (let i=1; i<=totalPages; i++) {
+            paginationContainer.appendChild(createPageBtn(i, i === currentPage));
+          }
+        } else {
+          if (currentPage <= 4) {
+            for(let i=1; i<=5; i++) paginationContainer.appendChild(createPageBtn(i, i===currentPage));
+            const dots = document.createElement('span');
+            dots.textContent = '…';
+            dots.style.padding = '4px 6px';
+            paginationContainer.appendChild(dots);
+            paginationContainer.appendChild(createPageBtn(totalPages, false));
+          } else if (currentPage > totalPages -4) {
+            paginationContainer.appendChild(createPageBtn(1, false));
+            const dots = document.createElement('span');
+            dots.textContent = '…';
+            dots.style.padding = '4px 6px';
+            paginationContainer.appendChild(dots);
+            for(let i = totalPages -4; i<= totalPages; i++) {
+              paginationContainer.appendChild(createPageBtn(i, i===currentPage));
+            }
+          } else {
+            paginationContainer.appendChild(createPageBtn(1, false));
+            const dots1 = document.createElement('span');
+            dots1.textContent = '…';
+            dots1.style.padding = '4px 6px';
+            paginationContainer.appendChild(dots1);
+            for(let i = currentPage -1; i <= currentPage +1; i++) {
+              paginationContainer.appendChild(createPageBtn(i, i===currentPage));
+            }
+            const dots2 = document.createElement('span');
+            dots2.textContent = '…';
+            dots2.style.padding = '4px 6px';
+            paginationContainer.appendChild(dots2);
+            paginationContainer.appendChild(createPageBtn(totalPages, false));
+          }
+        }
+
+         // (letakkan di sini, sebelum nextBtn)
+  // Input nomor halaman custom
+  const pageInput = document.createElement('input');
+  pageInput.type = 'number';
+  pageInput.min = 1;
+  pageInput.max = totalPages;
+  pageInput.value = currentPage;
+  pageInput.style.width = '54px';
+  pageInput.style.margin = '0 8px';
+  pageInput.style.textAlign = 'center';
+  pageInput.title = 'Masukkan nomor halaman';
+  pageInput.setAttribute('aria-label', 'Input nomor halaman');
+  pageInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      let val = parseInt(pageInput.value, 10);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > totalPages) val = totalPages;
+      if (val !== currentPage) {
+        currentPage = val;
+        renderTable();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  });
+  pageInput.addEventListener('blur', function() {
+    let val = parseInt(pageInput.value, 10);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > totalPages) val = totalPages;
+    if (val !== currentPage) {
+      currentPage = val;
+      renderTable();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+  paginationContainer.appendChild(pageInput);
+
+
+
+       // Next button
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = '→';
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.setAttribute('aria-label', 'Halaman selanjutnya');
+  nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderTable();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+  paginationContainer.appendChild(nextBtn);
+
+  // Info total halaman
+  const info = document.createElement('span');
+  info.textContent = ` dari ${totalPages}`;
+  info.style.marginLeft = '4px';
+  info.style.fontSize = '1em';
+  paginationContainer.appendChild(info);
+}
+
+      const sortableHeaders = document.querySelectorAll('th.sortable');
+      sortableHeaders.forEach(th => {
+        th.addEventListener('click', () => {
+          const key = th.dataset.sort;
+          if (sortKey === key) {
+            sortAsc = !sortAsc;
+          } else {
+            sortKey = key;
+            sortAsc = true;
+          }
+          currentPage = 1;
+          renderTable();
+        });
+        th.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            th.click();
+          }
+        });
+      });
+
+      function updateSortIndicators() {
+        sortableHeaders.forEach(th => {
+          const indicator = th.querySelector('.sort-indicator');
+          if (th.dataset.sort === sortKey) {
+            indicator.textContent = sortAsc ? '▲' : '▼';
+            th.setAttribute('aria-sort', sortAsc ? 'ascending' : 'descending');
+          } else {
+            indicator.textContent = '';
+            th.setAttribute('aria-sort', 'none');
+          }
+        });
+      }
+
+      function removeDuplicates() {
+        const uniquePhones = new Set();
+        const uniqueContacts = [];
+        contacts.forEach(c => {
+          if (!uniquePhones.has(c.phone)) {
+            uniquePhones.add(c.phone);
+            uniqueContacts.push(c);
+          }
+        });
+        contacts.length = 0;
+        contacts.push(...uniqueContacts);
+        selectedContacts.clear();
+        currentPage = 1;
+        renderTagFilter();
+        renderCategoryFilter();
+        renderTable();
+        alert('Duplikat berhasil dihapus.');
+      }
+
+
+function exportCSV(contactSubset) {
+  const list = contactSubset || contacts;
+  if (list.length === 0) {
+      alert('Tidak ada kontak untuk diekspor.');
+      return;
+  }
+
+  // Inisialisasi data agar tidak undefined/null
+  list.forEach(c => {
+    if (!c.tags) c.tags = new Set();
+    if (typeof c.name !== 'string') c.name = '';
+    if (typeof c.phone !== 'string') c.phone = '';
+    if (typeof c.category !== 'string') c.category = '';
+    if (typeof c.filename !== 'string') c.filename = '';
+    if (typeof c.var1 !== 'string') c.var1 = '';
+    if (typeof c.var2 !== 'string') c.var2 = '';
+    if (typeof c.var3 !== 'string') c.var3 = '';
+    if (typeof c.var4 !== 'string') c.var4 = '';
+    if (typeof c.var5 !== 'string') c.var5 = '';
+    if (typeof c.message !== 'string') c.message = '';
+    if (typeof c.notes !== 'string') c.notes = '';
+    if (typeof c.followUp !== 'string') c.followUp = '';
+  });
+
+  // ...lanjutkan proses ekspor CSV seperti biasa...
+  const csvHeader = [
+    'Nama', 'Nomor Telepon', 'Kategori', 'Nama File',
+    'VAR1 (Posisi/Jabatan)', 'VAR2 (Tempat Kerja)', 'VAR3 (Target Pasar)', 'VAR4 (Produk)', 'VAR5 (Paket Promo)',
+    'PESAN', 'Tag', 'Catatan', 'Tanggal Follow Up'
+  ];
+  const rows = list.map(c => [
+    `"${(c.name || '').replace(/"/g, '""')}"`,
+    `"${(c.phone || '').replace(/"/g, '""')}"`,
+    `"${(c.category || '').replace(/"/g, '""')}"`,
+    `"${(c.filename || '').replace(/"/g, '""')}"`,
+    `"${(c.var1 || '').replace(/"/g, '""')}"`,
+    `"${(c.var2 || '').replace(/"/g, '""')}"`,
+    `"${(c.var3 || '').replace(/"/g, '""')}"`,
+    `"${(c.var4 || '').replace(/"/g, '""')}"`,
+    `"${(c.var5 || '').replace(/"/g, '""')}"`,
+    `"${(c.message || '').replace(/"/g, '""')}"`,
+    `"${Array.from(c.tags || []).join(', ').replace(/"/g, '""')}"`,
+    `"${(c.notes || '').replace(/"/g, '""')}"`,
+    `"${(c.followUp || '').replace(/"/g, '""')}"`
+  ]);
+  const content = [csvHeader, ...rows].map(r => r.join(',')).join('\r\n');
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'contacts_export.csv';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+  }, 200);
+}
+
+
+      function exportContactAsCSV(contact) {
+        exportCSV([contact]);
+      }
+
+// Fungsi ekspor custom ke TXT (CSV koma)
+document.getElementById('btn-export-custom-txt').addEventListener('click', function() {
+  if (contacts.length === 0) {
+    alert('Tidak ada kontak untuk diekspor.');
+    return;
+  }
+  const now = new Date();
+  const tgl = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0');
+  const header = ['Nama', 'Nomor', 'Tag', 'Kategori', 'Tanggal'];
+  const rows = contacts.map(c => [
+    `"${(c.name || '').replace(/"/g, '""')}"`,
+    `"${(c.phone || '').replace(/"/g, '""')}"`,
+    `"${Array.from(c.tags).join('; ').replace(/"/g, '""')}"`,
+    `"${(c.category || '').replace(/"/g, '""')}"`,
+    `"${tgl}"`
+  ]);
+  const content = [header, ...rows].map(r => r.join(',')).join('\r\n');
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'contacts_export_custom.txt';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 200);
+});
+
+    function updateBulkActions() {
+    const selectedCount = selectedContacts.size;
+    bulkSelectedCount.textContent = `${selectedCount} kontak terpilih`;
+    const enable = selectedCount > 0;
+    bulkTagBtn.disabled = !enable;
+    bulkRemoveTagBtn.disabled = !enable;
+    bulkDeleteBtn.disabled = !enable;
+    bulkExportBtn.disabled = !enable;
+    bulkTagSelect.disabled = !enable;
+    bulkSetCategoryBtn.disabled = !(enable && bulkSetCategorySelect.value);
+    bulkSetCategoryBtn.setAttribute('aria-disabled', bulkSetCategoryBtn.disabled);
+    bulkActionsBar.hidden = !enable;
+    // Update visibility of bulk forms
+    updateBulkFormsVisibility();
+}
+
+// ...existing code...
+bulkSetCategoryBtn.addEventListener('click', () => {
+    const cat = bulkSetCategorySelect.value.trim();
+    if (!cat) {
+        alert('Pilih kategori untuk diset');
+        return;
+    }
+    selectedContacts.forEach(id => {
+        const c = contacts.find(cont => cont.id === id);
+        if (c) c.category = cat;
+    });
+    renderCategoryFilter();
+    renderTable();
+});
+// ...existing code...
+      function updateSelectAllCheckbox() {
+        const visibleCheckboxes = Array.from(contactsTbody.querySelectorAll('input[type="checkbox"][data-id]'));
+        if (visibleCheckboxes.length === 0) {
+          selectAllCheckbox.checked = false;
+          selectAllCheckbox.indeterminate = false;
+          selectAllCheckbox.disabled = true;
+          return;
+        }
+        selectAllCheckbox.disabled = false;
+        const allChecked = visibleCheckboxes.every(cb => cb.checked);
+        const someChecked = visibleCheckboxes.some(cb => cb.checked);
+        selectAllCheckbox.checked = allChecked;
+        selectAllCheckbox.indeterminate = !allChecked && someChecked;
+      }
+
+      selectAllCheckbox.addEventListener('change', () => {
+        const checked = selectAllCheckbox.checked;
+        contactsTbody.querySelectorAll('input[type="checkbox"][data-id]').forEach(cb => {
+          cb.checked = checked;
+          const id = cb.dataset.id;
+          if (checked) selectedContacts.add(id); else selectedContacts.delete(id);
+        });
+        updateBulkActions();
+      });
+
+     bulkTagBtn.addEventListener('click', () => {
+    const tag = bulkTagSelect.value.trim();
+    if (!tag) {
+        alert('Pilih tag untuk ditambahkan');
+        return;
+    }
+    selectedContacts.forEach(id => {
+        const c = contacts.find(cont => cont.id === id);
+        if (c) c.tags.add(tag);
+    });
+    renderTagFilter();
+    renderTable();
+});
+     bulkRemoveTagBtn.addEventListener('click', () => {
+    const tag = bulkTagSelect.value.trim();
+    if (!tag) {
+        alert('Pilih tag untuk dihapus');
+        return;
+    }
+    selectedContacts.forEach(id => {
+        const c = contacts.find(cont => cont.id === id);
+        if (c && c.tags.has(tag)) c.tags.delete(tag);
+    });
+    renderTagFilter();
+    renderTable();
+});
+
+
+      bulkDeleteBtn.addEventListener('click', () => {
+        if (!confirm(`Yakin ingin menghapus ${selectedContacts.size} kontak terpilih?`)) return;
+        deleteContacts(new Set(selectedContacts));
+      });
+
+      // Bulk export selected contacts as CSV
+      bulkExportBtn.addEventListener('click', () => {
+        const subset = contacts.filter(c => selectedContacts.has(c.id));
+        exportCSV(subset);
+      });
+
+      // Export all contacts button outside table (btnExportCSV)
+      btnExportCSV.addEventListener('click', () => {
+        if (contacts.length === 0) {
+          alert('Tidak ada kontak untuk diekspor.');
+          return;
+        }
+        exportCSV(contacts);
+      });
+
+
+ 
+      function deleteContacts(ids) {
+        if (!ids || ids.size === 0) return;
+        const remaining = [];
+        const deleted = [];
+        contacts.forEach(c => {
+          if (ids.has(c.id)) deleted.push(c);
+          else remaining.push(c);
+        });
+        contacts.length = 0;
+        contacts.push(...remaining);
+        selectedContacts.clear();
+        lastDeleted = deleted;
+        renderTagFilter();
+        renderCategoryFilter();
+        renderTable();
+        bulkActionsBar.hidden = true;
+        undoDeleteBtn.style.display = 'inline-block';
+        setTimeout(() => {
+          undoDeleteBtn.style.display = 'none';
+          lastDeleted = null;
+        }, 10000);
+      }
+
+      undoDeleteBtn.addEventListener('click', () => {
+        if (lastDeleted && lastDeleted.length > 0) {
+          contacts.push(...lastDeleted);
+          lastDeleted = null;
+          renderTagFilter();
+          renderCategoryFilter();
+          renderTable();
+          undoDeleteBtn.style.display = 'none';
+          alert('Penghapusan dibatalkan');
+        }
+      });
+
+      searchInput.addEventListener('input', () => {
+        currentPage = 1;
+        renderTable();
+      });
+      tagFilter.addEventListener('change', () => {
+        currentPage = 1;
+        renderTable();
+      });
+      categoryFilter.addEventListener('change', () => {
+        currentPage = 1;
+        renderTable();
+      });
+
+      btnRemoveDuplicates.addEventListener('click', () => {
+        if (confirm('Yakin ingin menghapus nomor telepon duplikat?')) {
+          removeDuplicates();
+        }
+      });
+
+    
+      fileInput.addEventListener('change', () => {
+        const files = fileInput.files;
+        if (files.length > 0) renderFilePreview(files);
+      });
+
+ 
+      renderTable();
+
+    })();
+  </script>
+   <script>
+    const menuToggle = document.getElementById('menuToggle');
+const mainNavbar = document.querySelector('.main-navbar');
+menuToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  const opened = mainNavbar.classList.toggle('open');
+  menuToggle.setAttribute('aria-expanded', opened ? 'true' : 'false');
+});
+// Tutup menu jika klik di luar menu saat mobile
+document.addEventListener('click', function(e) {
+  if (window.innerWidth <= 830 && mainNavbar.classList.contains('open')) {
+    if (!mainNavbar.contains(e.target) && !menuToggle.contains(e.target)) {
+      mainNavbar.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+
+
+
+// filepath: [index.html](http://_vscodecontentref_/0)
+let scrollStopFlag = false;
+
+function autoScroll(targetY, speed) {
+  scrollStopFlag = false;
+  if (!speed || isNaN(speed) || speed <= 0) {
+    window.scrollTo(0, targetY);
+    return;
+  }
+  let current = window.scrollY;
+  let direction = targetY > current ? 1 : -1;
+  let stepPx = 10;
+  function step() {
+    if (scrollStopFlag) {
+      // Jika dihentikan, jangan scroll ke target, cukup berhenti di posisi sekarang
+      return;
+    }
+    if ((direction === 1 && current >= targetY) || (direction === -1 && current <= targetY)) {
+      window.scrollTo(0, targetY);
+      return;
+    }
+    current += direction * stepPx;
+    if ((direction === 1 && current > targetY) || (direction === -1 && current < targetY)) {
+      current = targetY;
+    }
+    window.scrollTo(0, current);
+    setTimeout(step, speed);
+  }
+  step();
+}
+
+document.getElementById('scroll-to-top').onclick = function() {
+  const speed = parseInt(document.getElementById('scroll-speed').value, 10);
+  autoScroll(0, speed);
+};
+document.getElementById('scroll-to-bottom').onclick = function() {
+  const speed = parseInt(document.getElementById('scroll-speed').value, 10);
+  autoScroll(document.body.scrollHeight, speed);
+};
+document.getElementById('scroll-stop').onclick = function() {
+  scrollStopFlag = true;
+};
+document.getElementById('scroll-reset').onclick = function() {
+  scrollStopFlag = true;
+  window.scrollTo(0, 0);
+};
+
+  </script>
+
+
+
+
+
+
+
+
+<script type="module">
+import * as pdfjsLib from './libs/pdfjs/pdf.mjs';
+
+const btnOpenPDF = document.getElementById('btn-open-pdf');
+const inputOpenPDF = document.getElementById('open-pdf');
+const pdfViewerContainer = document.getElementById('pdf-viewer-container');
+const pdfControls = document.getElementById('pdf-controls');
+const pdfPrev = document.getElementById('pdf-prev');
+const pdfNext = document.getElementById('pdf-next');
+const pdfPageNum = document.getElementById('pdf-page-num');
+const pdfPageCount = document.getElementById('pdf-page-count');
+const pdfZoomIn = document.getElementById('pdf-zoom-in');
+const pdfZoomOut = document.getElementById('pdf-zoom-out');
+
+let pdfDoc = null;
+let pageNum = 1;
+let pageCount = 1;
+let scale = 1.2;
+
+btnOpenPDF.onclick = () => inputOpenPDF.click();
+
+inputOpenPDF.onchange = function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './libs/pdfjs/pdf.worker.mjs';
+    pdfjsLib.getDocument({data: e.target.result}).promise.then(pdf => {
+      pdfDoc = pdf;
+      pageNum = 1;
+      pageCount = pdf.numPages;
+      scale = 1.2;
+      pdfPageCount.textContent = pageCount;
+      pdfPageNum.value = pageNum;
+      pdfControls.style.display = '';
+      renderPage(pageNum);
+    }).catch(err => {
+      pdfViewerContainer.innerHTML = `<div style="color:#dc2626;">Gagal membuka PDF: ${err.message}</div>`;
+      pdfControls.style.display = 'none';
+    });
+  };
+  reader.readAsArrayBuffer(file);
+};
+
+function renderPage(num) {
+  pdfDoc.getPage(num).then(page => {
+    const viewport = page.getViewport({scale});
+    pdfViewerContainer.innerHTML = `<canvas id="pdf-canvas" style="max-width:100%;border:1px solid #ccc;background:#fff;"></canvas>`;
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    page.render({canvasContext: ctx, viewport: viewport});
+    pdfPageNum.value = num;
+    pdfPageCount.textContent = pageCount;
+    pdfPrev.disabled = num <= 1;
+    pdfNext.disabled = num >= pageCount;
+  });
+}
+
+pdfPrev.onclick = () => {
+  if (pageNum > 1) {
+    pageNum--;
+    renderPage(pageNum);
+  }
+};
+pdfNext.onclick = () => {
+  if (pageNum < pageCount) {
+    pageNum++;
+    renderPage(pageNum);
+  }
+};
+pdfPageNum.onchange = () => {
+  let val = parseInt(pdfPageNum.value, 10);
+  if (isNaN(val) || val < 1) val = 1;
+  if (val > pageCount) val = pageCount;
+  pageNum = val;
+  renderPage(pageNum);
+};
+pdfZoomIn.onclick = () => {
+  scale = Math.min(scale + 0.2, 3);
+  renderPage(pageNum);
+};
+pdfZoomOut.onclick = () => {
+  scale = Math.max(scale - 0.2, 0.4);
+  renderPage(pageNum);
+};
+
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const darkModeToggleBtn = document.getElementById('darkModeToggle');
+  if (!darkModeToggleBtn) return;
+
+  function updateDarkModeUI(dark) {
+    if (dark) {
+      document.documentElement.classList.add('dark');
+      darkModeToggleBtn.textContent = '☀️ Light Mode';
+      darkModeToggleBtn.setAttribute('aria-pressed', 'true');
+    } else {
+      document.documentElement.classList.remove('dark');
+      darkModeToggleBtn.textContent = '🌙 Dark Mode';
+      darkModeToggleBtn.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  function getInitialDarkMode() {
+    const saved = localStorage.getItem('darkMode');
+    if (saved === 'true') return true;
+    if (saved === 'false') return false;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  let darkModeEnabled = getInitialDarkMode();
+  updateDarkModeUI(darkModeEnabled);
+
+  darkModeToggleBtn.addEventListener('click', () => {
+    darkModeEnabled = !darkModeEnabled;
+    updateDarkModeUI(darkModeEnabled);
+    localStorage.setItem('darkMode', darkModeEnabled);
+  });
+});
+</script>
+</body>
+</html>

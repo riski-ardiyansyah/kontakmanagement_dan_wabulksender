@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Percetakan Megah Pratama - Contact Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* CSS styles here */
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Percetakan Megah Pratama</div>
+  </header>
+  <main>
+    <section>
+      <h1>Impor Kontak</h1>
+      <input type="file" id="file-input" multiple accept=".csv, .xlsx" />
+      <label for="file-input" class="file-input-label">Pilih file untuk diunggah</label>
+      <div id="file-preview-container"></div>
+    </section>
+    <section>
+      <h2>Daftar Kontak</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nomor Telepon</th>
+              <th>Nama</th>
+              <th>Kategori</th>
+              <th>Nama File</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="contacts-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const filePreviewContainer = document.getElementById('file-preview-container');
+    const contactsTbody = document.getElementById('contacts-tbody');
+
+    fileInput.addEventListener('change', () => {
+      const files = fileInput.files;
+      if (files.length > 0) renderFilePreview(files);
+    });
+
+    function renderFilePreview(files) {
+      filePreviewContainer.innerHTML = '';
+      Array.from(files).forEach((file, idx) => {
+        const fileDiv = document.createElement('div');
+        fileDiv.innerHTML = `<strong>${file.name}</strong><div id="column-select-container-${idx}">Memuat preview file...</div>`;
+        filePreviewContainer.appendChild(fileDiv);
+        readFileAndPreview(file, idx);
+      });
+    }
+
+    function readFileAndPreview(file, idx) {
+      const container = document.getElementById('column-select-container-' + idx);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        let workbook;
+        try {
+          workbook = XLSX.read(data, { type: 'binary' });
+        } catch (error) {
+          container.innerHTML = `<span style="color: red;">Kesalahan membaca file: ${error.message}</span>`;
+          return;
+        }
+
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        if (jsonData.length === 0) {
+          container.innerHTML = `<span style="color: red;">File kosong</span>`;
+          return;
+        }
+
+        // Create column selection and import button
+        container.innerHTML = `
+          <label>Pilih kolom nomor telepon:</label>
+          <select id="phone-col-${idx}">${buildOptions(jsonData[0])}</select>
+          <button id="import-btn-${idx}">Impor</button>
+          <pre id="preview-data-${idx}"></pre>
+        `;
+
+        const importBtn = document.getElementById(`import-btn-${idx}`);
+        importBtn.addEventListener('click', () => {
+          const phoneCol = document.getElementById(`phone-col-${idx}`).value;
+          importContactsFromData(jsonData, phoneCol);
+        });
+      };
+
+      reader.readAsBinaryString(file);
+    }
+
+    function buildOptions(headers) {
+      return headers.map((header, index) => `<option value="${index}">${header || '(Kolom ' + (index + 1) + ')'}</option>`).join('');
+    }
+
+    function importContactsFromData(data, phoneCol) {
+      // Implement your import logic here
+      console.log(`Importing contacts from column: ${phoneCol}`);
+      // Example: Add contacts to the table
+      const contacts = data.slice(1).map(row => ({
+        phone: row[phoneCol],
+        name: row[1], // Assuming name is in the second column
+        category: row[2], // Assuming category is in the third column
+        filename: 'Imported File' // Example filename
+      }));
+
+      renderContacts(contacts);
+    }
+
+    function renderContacts(contacts) {
+      contactsTbody.innerHTML = '';
+      contacts.forEach(contact => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${contact.phone}</td>
+          <td>${contact.name}</td>
+          <td>${contact.category}</td>
+          <td>${contact.filename}</td>
+          <td><button class="button-danger">Hapus</button></td>
+        `;
+        contactsTbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
